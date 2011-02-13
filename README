@@ -1,0 +1,41 @@
+-*- markdown -*-
+
+# Fountain-JDBC v0.1-SNAPSHOT
+
+Fountain-JDBC is a Clojure wrapper for Spring-JDBC (a component to deal with JDBC
+in Spring framework.) The current scope is:
+
+* Parameterized SQL statements
+* Database metadata assisted Inserts
+
+
+## Usage
+
+Maven/Leiningen dependency details are here: [http://clojars.org/org.bituf/fountain-jdbc](http://clojars.org/org.bituf/fountain-jdbc)
+
+Examples for usage can be found in the tutorial below:
+
+
+## Building/Installation
+
+You will need Maven 2 to build from sources. Execute the following:
+
+    $ mvn clean package  # packages up a JAR in "target" dir
+    $ mvn install        # to install to your local Maven repo
+    $ mvn clojure:gendoc # generate Clojure API documentation
+
+
+## License
+
+Copyright (C) 2010 Shantanu Kumar (kumar.shantanu at gmail dot com)
+
+Distributed under the Apache 2 License.
+
+
+# Tutorial
+
+## Parameterized SQL statements
+
+    (use 'org.bituf.fountain.jdbc)
+
+## Database metadata assisted Inserts
