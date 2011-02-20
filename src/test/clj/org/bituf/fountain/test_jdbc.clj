@@ -22,9 +22,10 @@
 
 (defmacro with-stmt
   [st & body]
-  `(sp/with-connection
-     (with-open [~st (.createStatement ^Connection (:connection sp/*dbspec*))]
-       ~@body)))
+  `((sp/wrap-connection
+      (fn []
+        (with-open [~st (.createStatement ^Connection (:connection sp/*dbspec*))]
+          ~@body)))))
 
 
 (defn setup
@@ -159,8 +160,7 @@
       (let [sji (jd/make-sji :sample :gencols :sample-id)]
         (is (= [1 1]
               (jd/insert-batch sji [{:name "Hello" :age 20}
-                                    {:name "World" :age 30}])))
-        ))))
+                                    {:name "World" :age 30}])))))))
 
 
 (defn test-ns-hook []
