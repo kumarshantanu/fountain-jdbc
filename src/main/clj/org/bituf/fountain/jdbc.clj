@@ -17,24 +17,29 @@
       version [0 1])
 
 
-(defn make-context
+(defn make-sjtspec
   "Return a map with the following key associated to its respective value:
     :org.bituf.fountain.jdbc.sjt - SimpleJdbcTemplate
-  The return value can be used in 'with-context' as argument.
   See also:
     with-context
     clj-dbspec/*dbspec*"
   [& {:keys [^DataSource datasource]
       :or   {datasource  nil}}]
-  (let [ds  (or datasource (:datasource sp/*dbspec*))
-        sjt ^SimpleJdbcTemplate (SimpleJdbcTemplate. datasource)]
+  (let [ds  (or datasource (:datasource sp/*dbspec*)
+              (mu/illegal-arg "No valid DataSource found/supplied"))
+        sjt ^SimpleJdbcTemplate (SimpleJdbcTemplate. ds)]
      {:fountain.jdbc.sjt sjt}))
 
 
-(defmacro with-context
-  "Merge context with clj-dbspec/*dbspec* and execute body of code."
-  [context & body]
-  `(sp/with-dbspec ~context ~@body))
+(defn wrap-sjt
+  "Create SimpleJdbcTemplate instance and putting into clj-dbspec/*dbspec* as a
+  key execute f."
+  [f] {:post [(fn? %)]
+       :pre  [(fn? f)]}
+  (fn [& args]
+    (let [wf (sp/wrap-dbspec (make-sjtspec)
+               f)]
+      (apply wf args))))
 
 
 (defn- ^SimpleJdbcTemplate get-sjt
