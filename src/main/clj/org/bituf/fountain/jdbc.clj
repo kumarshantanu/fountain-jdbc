@@ -80,7 +80,7 @@
      (mu/array? ~args) (let [~(with-meta qargs ; Object[]
                                 {:tag "[Ljava.lang.Object;"}) ~args]
                          ~@body)
-     :else (mu/illegal-arg-value "args"
+     :else (mu/illegal-argval "args"
              "either map, or collection, or array" ~args)))
 
 
@@ -158,7 +158,7 @@
                                     (map into-array batch-args)]
                                 (show-sql-fn)
                                 (.batchUpdate (get-sjt) sql args-list))
-                       :else (mu/illegal-arg-value "batch-args"
+                       :else (mu/illegal-argval "batch-args"
                                "either list of lists, or list of maps"
                                batch-args))]
     (map identity result-array)))
