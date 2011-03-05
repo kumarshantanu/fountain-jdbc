@@ -56,7 +56,7 @@ Create a new project and include the following dependencies:
 
     [org.bituf/clj-dbcp "0.4"]
     [org.bituf/oss-jdbc "0.4"]
-    [org.bituf/clj-liquibase "0.1-SNAPSHOT"]
+    [org.bituf/fountain-jdbc "0.1-SNAPSHOT"]
 
 Define the CRUD functions as follows:
 
