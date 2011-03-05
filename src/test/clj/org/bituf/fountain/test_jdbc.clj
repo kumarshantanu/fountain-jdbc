@@ -175,10 +175,7 @@
 (deftest test-insert
   (testing "test-insert"
     (do-with-dbspec
-      insert-test)
-    ;((sp/wrap-dbspec dbspec
-    ;   (jd/wrap-sjt insert-test)))
-    ))
+      insert-test)))
 
 
 (defn insert-give-id-test
