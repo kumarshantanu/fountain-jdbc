@@ -55,6 +55,22 @@
   ([] (is false)))
 
 
+(defn do-with-dbspec
+  [f] {:post [(mu/not-fn? %)]
+       :pre  [(fn? f)]}
+  (let [g (sp/wrap-dbspec dbspec f)]
+    (g)))
+
+
+(defn do-with-sjt
+  "Execute f in the context of datasource and SimpleJdbcTemplate"
+  [f] {:post [(mu/not-fn? %)]
+       :pre  [(fn? f)]}
+  (let [g (sp/wrap-dbspec dbspec
+            (jd/wrap-sjt f))]
+    (g)))
+
+
 (defn query-for-int-test
   []
   (setup)
@@ -63,11 +79,11 @@
   (is (= 30 (jd/query-for-int "SELECT age FROM sample WHERE age = :age"
               {:age 30}))))
 
+
 (deftest test-query-for-int
   (testing "test-query-for-int"
-    ((sp/wrap-dbspec dbspec
-       (jd/wrap-sjt
-         query-for-int-test)))))
+    (do-with-sjt
+      query-for-int-test)))
 
 
 (defn query-for-long-test
@@ -81,8 +97,8 @@
 
 (deftest test-query-for-long
   (testing "test-query-for-long"
-    ((sp/wrap-dbspec dbspec
-       (jd/wrap-sjt query-for-long-test)))))
+    (do-with-sjt
+      query-for-long-test)))
 
 
 (defn query-for-map-test
@@ -98,8 +114,8 @@
 
 (deftest test-query-for-map
   (testing "test-query-for-map"
-    ((sp/wrap-dbspec dbspec
-       (jd/wrap-sjt query-for-map-test)))))
+    (do-with-sjt
+      query-for-map-test)))
 
 
 (defn query-for-list-test
@@ -116,8 +132,8 @@
 
 (deftest test-query-for-list
   (testing "test-query-for-list"
-    ((sp/wrap-dbspec dbspec
-       (jd/wrap-sjt query-for-list-test)))))
+    (do-with-sjt
+      query-for-list-test)))
 
 
 (defn update-test
@@ -131,8 +147,8 @@
 
 (deftest test-update
   (testing "test-update"
-    ((sp/wrap-dbspec dbspec
-       (jd/wrap-sjt update-test)))))
+    (do-with-sjt
+      update-test)))
 
 
 (defn batch-update-test
@@ -146,8 +162,8 @@
 
 (deftest test-batch-update
   (testing "test-batch-update"
-    ((sp/wrap-dbspec dbspec
-       (jd/wrap-sjt batch-update-test)))))
+    (do-with-sjt
+      batch-update-test)))
 
 
 (defn insert-test
@@ -158,8 +174,11 @@
 
 (deftest test-insert
   (testing "test-insert"
-    ((sp/wrap-dbspec dbspec
-       (jd/wrap-sjt insert-test)))))
+    (do-with-dbspec
+      insert-test)
+    ;((sp/wrap-dbspec dbspec
+    ;   (jd/wrap-sjt insert-test)))
+    ))
 
 
 (defn insert-give-id-test
@@ -171,8 +190,8 @@
 
 (deftest test-insert-give-id
   (testing "test-insert-give-id"
-    ((sp/wrap-dbspec dbspec
-       (jd/wrap-sjt insert-give-id-test)))))
+    (do-with-dbspec
+      insert-give-id-test)))
 
 
 (defn insert-give-idmap-test
@@ -189,8 +208,8 @@
 
 (deftest test-insert-give-idmap
   (testing "test-insert-give-idmap"
-    ((sp/wrap-dbspec dbspec
-       (jd/wrap-sjt insert-give-idmap-test)))))
+    (do-with-dbspec
+      insert-give-idmap-test)))
 
 
 (defn insert-batch-test
@@ -204,8 +223,8 @@
 
 (deftest test-insert-batch
   (testing "test-insert-batch"
-    ((sp/wrap-dbspec dbspec
-       (jd/wrap-sjt insert-batch-test)))))
+    (do-with-dbspec
+      insert-batch-test)))
 
 
 (defn test-ns-hook []
