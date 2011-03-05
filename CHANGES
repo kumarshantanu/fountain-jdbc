@@ -10,8 +10,8 @@
 * [TODO] Database metadata assisted Stored Procedures
 
 
-## 0.1 / 2011-Feb-??
+## 0.1 / 2011-Mar-06
 
 * Use Spring 3.0.5
 * Parameterized SQL statements (SimpleJdbcTemplate)
-* Database metadata assisted Inserts
+* Database metadata assisted Inserts (SimpleJdbcInsert)
