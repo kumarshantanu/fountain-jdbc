@@ -110,7 +110,7 @@ Now create another file that you can use for integration:
         [org.bituf.fountain.jdbc :as jd]))
     
     ;; define datasource for supported database using Clj-DBCP
-    (def ds (dbcp/mysql-datasource "localhost" "bituf" "root" "root"))
+    (def ds (dbcp/mysql-datasource "localhost" "dbname" "dbuser" "password"))
     
     (defn do-action "Wrap f using DBSpec middleware and execute it"
       [f] {:pre [(fn? f)]}
