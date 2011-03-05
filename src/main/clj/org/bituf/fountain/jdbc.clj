@@ -27,7 +27,7 @@
       :or   {datasource  nil}}]
   (let [ds  (or datasource (:datasource sp/*dbspec*)
               (mu/illegal-arg "No valid DataSource found/supplied"))
-        sjt ^SimpleJdbcTemplate (SimpleJdbcTemplate. ds)]
+        sjt ^SimpleJdbcTemplate (SimpleJdbcTemplate. ^DataSource ds)]
      {:fountain.jdbc.sjt sjt}))
 
 
