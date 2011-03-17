@@ -3,11 +3,16 @@
 # Changes and TODO
 
 
-* [TODO] Database transactions
-* [TODO] Declarative transactions (ignore which exceptions, isolation level)
 * [TODO] Stored procedures (without database metadata, StoredProcedure)
 * [TODO] Database vendor specific error codes
 * [TODO] Database metadata assisted Stored Procedures
+
+
+## 0.2 / 2011-Mar-??
+
+* Use Clj-DBSpec 0.2
+* [TODO] Database transactions
+* [TODO] Declarative transactions (ignore which exceptions, isolation level)
 
 
 ## 0.1 / 2011-Mar-06

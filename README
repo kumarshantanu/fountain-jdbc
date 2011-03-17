@@ -1,6 +1,6 @@
 -*- markdown -*-
 
-# Fountain-JDBC v0.1
+# Fountain-JDBC v0.2-SNAPSHOT
 
 Fountain-JDBC is a Clojure wrapper for Spring-JDBC (a component to deal with JDBC
 in Spring framework.) The current scope is:
