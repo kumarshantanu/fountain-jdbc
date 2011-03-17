@@ -14,7 +14,7 @@
 
 
 (def ^{:doc "Fountain-JDBC version (only major and minor)"}
-      version [0 1])
+      version [0 2])
 
 
 (defn make-sjtspec
@@ -58,7 +58,7 @@
   "Print the SQL statement if the *show-sql* flag is true."
   [sql]
   (when (:show-sql sp/*dbspec*)
-    (println sql)))
+    ((:show-sql-fn sp/*dbspec*) sql)))
 
 
 (defmacro with-query-args
