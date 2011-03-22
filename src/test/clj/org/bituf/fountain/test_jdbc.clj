@@ -7,7 +7,8 @@
     [org.bituf.fountain.jdbc :as jd]
     [org.bituf.clj-dbcp      :as cp]
     [org.bituf.clj-miscutil  :as mu]
-    [org.bituf.clj-dbspec    :as sp])
+    [org.bituf.clj-dbspec    :as sp]
+    [org.bituf.fountain.test-util :as tu])
   (:use clojure.test))
 
 
@@ -15,44 +16,6 @@
 
 
 (def dbspec (sp/make-dbspec ds))
-
-
-(defmacro with-stmt
-  [st & body]
-  `((sp/wrap-connection
-      (fn []
-        (with-open [~st (.createStatement ^Connection (:connection sp/*dbspec*))]
-          ~@body)))))
-
-
-(defn setup
-  []
-  (with-stmt ^Statement st
-    (mu/maybe (.execute st "DROP TABLE sample"))
-    (.execute st "CREATE TABLE sample
-                   (sample_id INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
-                    name      VARCHAR(30) NOT NULL,
-                    age       INT)")
-    (.execute st "INSERT INTO sample (name, age)
-                  VALUES ('Harry', 30)")))
-
-
-(defn setup2
-  []
-  (with-stmt ^Statement st
-    (mu/maybe (.execute st "DROP TABLE sample2"))
-    (.execute st "CREATE TABLE sample2
-                   (sample_id INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
-                    extra_id  INT         NOT NULL AUTO_INCREMENT,
-                    name      VARCHAR(30) NOT NULL,
-                    age       INT)")
-    (.execute st "INSERT INTO sample2 (name, age)
-                  VALUES ('Harry', 30)")))
-
-
-(defn fail
-  ([msg] (is false msg))
-  ([] (is false)))
 
 
 (defn do-with-dbspec
@@ -73,7 +36,7 @@
 
 (defn query-for-int-test
   []
-  (setup)
+  (tu/sample-setup)
   (is (= 30 (jd/query-for-int "SELECT age FROM sample WHERE age = 30")))
   (is (= 30 (jd/query-for-int "SELECT age FROM sample WHERE age = ?" [30])))
   (is (= 30 (jd/query-for-int "SELECT age FROM sample WHERE age = :age"
@@ -88,7 +51,7 @@
 
 (defn query-for-long-test
   []
-  (setup)
+  (tu/sample-setup)
   (is (= 30 (jd/query-for-long "SELECT age FROM sample WHERE age = 30")))
   (is (= 30 (jd/query-for-long "SELECT age FROM sample WHERE age = ?" [30])))
   (is (= 30 (jd/query-for-long "SELECT age FROM sample WHERE age = :age"
@@ -103,7 +66,7 @@
 
 (defn query-for-map-test
   []
-  (setup)
+  (tu/sample-setup)
   (is (= {:age 30}
         (jd/query-for-map "SELECT age FROM sample WHERE age = 30")))
   (is (= {:age 30}
@@ -120,7 +83,7 @@
 
 (defn query-for-list-test
   []
-  (setup)
+  (tu/sample-setup)
   (is (= [{:age 30}]
         (jd/query-for-list "SELECT age FROM sample WHERE age = 30")))
   (is (= [{:age 30}]
@@ -138,7 +101,7 @@
 
 (defn update-test
   []
-  (setup)
+  (tu/sample-setup)
   (is (= 1 (jd/update "UPDATE sample SET age=40 WHERE age=30")))
   (is (= 1 (jd/update "UPDATE sample SET age=50 WHERE age=?" [40])))
   (is (= 1 (jd/update "UPDATE sample SET age=60 WHERE age=:age"
@@ -153,7 +116,7 @@
 
 (defn batch-update-test
   []
-  (setup)
+  (tu/sample-setup)
   (is (= [1 1] (jd/batch-update
                  "INSERT INTO sample (name, age) VALUES (:name, :age)"
                  [{:name "Hello" :age 20}
@@ -168,7 +131,7 @@
 
 (defn insert-test
   []
-  (setup)
+  (tu/sample-setup)
   (let [sji (jd/make-sji :sample)]
     (is (= 1 (jd/insert sji {:name "Hello" :age 20})))))
 
@@ -180,7 +143,7 @@
 
 (defn insert-give-id-test
   []
-  (setup)
+  (tu/sample-setup)
   (let [sji (mu/! (jd/make-sji "sample" :gencols :sample-id))]
     (is (= 2 (jd/insert-give-id sji {:name "Hello" :age 20})))))
 
@@ -193,11 +156,11 @@
 
 (defn insert-give-idmap-test
   []
-  (setup)
+  (tu/sample-setup)
   (let [sji (jd/make-sji :sample :gencols :sample-id)]
     (is (= 2 (first (vals (jd/insert-give-idmap sji
                             {:name "Hello" :age 20}))))))
-  (setup2)
+  (tu/sample2-setup)
   (let [sji (jd/make-sji :sample2 :gencols [:sample-id :extra-id])]
     (is (= 2 (first (vals (jd/insert-give-idmap sji
                             {:name "Hello" :age 20})))))))
@@ -211,7 +174,7 @@
 
 (defn insert-batch-test
   []
-  (setup)
+  (tu/sample-setup)
   (let [sji (jd/make-sji :sample :gencols :sample-id)]
     (is (= [1 1]
           (jd/insert-batch sji [{:name "Hello" :age 20}
