@@ -19,36 +19,54 @@
 
 (defn make-sjtspec
   "Return a map with the following key associated to its respective value:
-    :org.bituf.fountain.jdbc.sjt - SimpleJdbcTemplate
+    :fountain.jdbc.sjt - SimpleJdbcTemplate
   See also:
     with-context
     clj-dbspec/*dbspec*"
   [& {:keys [^DataSource datasource]
-      :or   {datasource  nil}}]
+      :or   {datasource  nil}
+      :as opt}]
+  {:post [(mu/verify-cond (map? %))]
+   :pre  [(mu/verify-opt #{:datasource} opt)]}
   (let [ds  (or datasource (:datasource sp/*dbspec*)
               (mu/illegal-arg "No valid DataSource found/supplied"))
         sjt ^SimpleJdbcTemplate (SimpleJdbcTemplate. ^DataSource ds)]
      {:fountain.jdbc.sjt sjt}))
 
 
+(defn assoc-sjt
+  "Associate SimpleJdbcTemplate instance with the DB-Spec."
+  ([spec sjtspec] {:post [(mu/verify-cond (map? %))]
+                   :pre  [(mu/verify-arg (map? spec))
+                          (mu/verify-arg (map? sjtspec))
+                          (mu/verify-arg (contains? sjtspec :fountain.jdbc.sjt))]}
+    (sp/assoc-kvmap spec sjtspec))
+  ([spec] {:post [(mu/verify-cond (map? %))]
+           :pre  [(mu/verify-arg (map? spec))
+                  (mu/verify-arg (contains? spec :datasource))
+                  (mu/verify-arg (instance? DataSource (:datasource spec)))]}
+    (sp/assoc-kvmap spec (sp/with-dbspec spec
+                           (make-sjtspec)))))
+
+
 (defn wrap-sjt
   "Create SimpleJdbcTemplate instance and putting into clj-dbspec/*dbspec* as a
   key execute f."
-  [f] {:post [(fn? %)]
-       :pre  [(fn? f)]}
+  [f] {:post [(mu/verify-cond (fn? %))]
+       :pre  [(mu/verify-arg (fn? f))]}
   (fn [& args]
     (let [wf (sp/wrap-dbspec (make-sjtspec)
                f)]
       (apply wf args))))
 
 
-(defn- ^SimpleJdbcTemplate get-sjt
+(defn ^SimpleJdbcTemplate get-sjt
   "Get SimpleJdbcTemplate from context"
   ([context] (:fountain.jdbc.sjt context))
   ([] (get-sjt sp/*dbspec*)))
 
 
-(defn- ^SimpleJdbcInsert get-sji
+(defn ^SimpleJdbcInsert get-sji
   "Get SimpleJdbcInsert from context"
   ([context] (:fountain.jdbc.sji context))
   ([] (get-sji sp/*dbspec*)))
@@ -131,6 +149,7 @@
 (defn update
   "Execute update-query and return integer result (number of rows affected)."
   ([^String sql args]
+    (sp/verify-writable)
     (with-query-args [qargs args]
       (show-sql sql)
       (.update (get-sjt) sql qargs)))
@@ -144,6 +163,7 @@
   2. or a list of named param-value maps
   Return a lazy list of integers, each being the number of rows affected."
   [^String sql batch-args]
+  (sp/verify-writable)
   (let [args1        (first batch-args)
         is-map       (map? args1)
         is-seq       (or (coll? args1) (mu/array? args1))
@@ -220,6 +240,7 @@
   suitable if you want to retrieve generated column keys.
   See also: insert-give-id, insert-give-idmap"
   [^SimpleJdbcInsert sji row]
+  (sp/verify-writable)
   ;; sji.withTableName("tableName")
   ;; .execute(/* Map<String, Object> */ row); // int
   (try
@@ -231,6 +252,7 @@
 (defn insert-give-id
   "Insert row and return generated ID."
   [^SimpleJdbcInsert sji row]
+  (sp/verify-writable)
   ;; sji.withTableName("tableName")
   ;; .executeAndReturnKey(/* Map<String, Object> */ row); // Number
   (try
@@ -242,6 +264,7 @@
 (defn insert-give-idmap
   "Insert row and return generated ID map (for multiple columns)."
   [^SimpleJdbcInsert sji row]
+  (sp/verify-writable)
   ;; sji.withTableName("tableName")
   ;; .executeAndReturnKeyHolder(/* Map<String, Object> */ row)
   ;; .getKeys(); // Map<String, Object>
@@ -257,6 +280,7 @@
   "Insert rows in a batch and return a lazy list containing number of affected
   rows per insertion."
   [^SimpleJdbcInsert sji batch-rows]
+  (sp/verify-writable)
   ;; sji.withTableName("tableName")
   ;; .executeBatch(/* Map<String, Object>[] */ batchRows); // int[]
   (try
