@@ -7,6 +7,7 @@ in Spring framework.) The current scope is:
 
 * Parameterized SQL statements
 * Database metadata assisted Inserts
+* Transactions (1. programmatic, 2. predicate based, 3. rule based)
 
 
 ## Usage
