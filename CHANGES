@@ -8,7 +8,7 @@
 * [TODO] Database metadata assisted Stored Procedures
 
 
-## 0.2 / 2011-Mar-??
+## 0.2 / 2011-Apr-01
 
 * Use Clj-DBSpec 0.2
 * Database transactions

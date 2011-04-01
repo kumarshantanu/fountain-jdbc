@@ -1,6 +1,6 @@
 -*- markdown -*-
 
-# Fountain-JDBC v0.2-SNAPSHOT
+# Fountain-JDBC v0.2
 
 Fountain-JDBC is a Clojure wrapper for Spring-JDBC (a component to deal with JDBC
 in Spring framework.) The current scope is:
@@ -54,9 +54,9 @@ You can include Fountain-JDBC to your project by including its namespace:
 Create a new project and include the following dependencies:
 
 
-    [org.bituf/clj-dbcp "0.4"]
+    [org.bituf/clj-dbcp "0.5"]
     [org.bituf/oss-jdbc "0.4"]
-    [org.bituf/fountain-jdbc "0.1"]
+    [org.bituf/fountain-jdbc "0.2"]
 
 Define the CRUD functions as follows:
 
