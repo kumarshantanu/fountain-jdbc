@@ -5,6 +5,7 @@
   (:import
     (java.util List Map)
     (javax.sql DataSource)
+    (org.springframework.jdbc.core        JdbcTemplate)
     (org.springframework.jdbc.core.simple SimpleJdbcTemplate SimpleJdbcInsert
                                           SimpleJdbcCall)
     (org.springframework.jdbc.support     KeyHolder))
@@ -23,14 +24,19 @@
   See also:
     with-context
     clj-dbspec/*dbspec*"
-  [& {:keys [^DataSource datasource]
+  [& {:keys [^DataSource datasource fetch-size query-timeout]
       :or   {datasource  nil}
       :as opt}]
   {:post [(mu/verify-cond (map? %))]
-   :pre  [(mu/verify-opt #{:datasource} opt)]}
+   :pre  [(mu/verify-opt #{:datasource :fetch-size :query-timeout} opt)]}
   (let [ds  (or datasource (:datasource sp/*dbspec*)
               (mu/illegal-arg "No valid DataSource found/supplied"))
-        sjt ^SimpleJdbcTemplate (SimpleJdbcTemplate. ^DataSource ds)]
+        fs  (if (contains? opt :fetch-size)    fetch-size    (:fetch-size    sp/*dbspec*))
+        qt  (if (contains? opt :query-timeout) query-timeout (:query-timeout sp/*dbspec*))
+        jt  (JdbcTemplate. ^DataSource ds)
+        _   (when fs (.setFetchSize    jt fs))
+        _   (when qt (.setQueryTimeout jt qt))
+        sjt ^SimpleJdbcTemplate (SimpleJdbcTemplate. ^JdbcTemplate jt)]
      {:fountain.jdbc.sjt sjt}))
 
 
@@ -122,7 +128,7 @@
     (query-for-long sql {})))
 
 
-(defn query-for-map
+(defn query-for-row
   "Execute query and return a row (expressed as a map)."
   ([^String sql args]
     (with-query-args [qargs args]
@@ -131,7 +137,7 @@
           (show-sql sql)
           (.queryForMap (get-sjt) sql qargs)))))
   ([sql]
-    (query-for-map sql {})))
+    (query-for-row sql {})))
 
 
 (defn query-for-list
@@ -210,9 +216,13 @@
              gencols  []
              catalog  (:catalog sp/*dbspec*)
              schema   (:schema  sp/*dbspec*)
-             use-meta true}}]
+             use-meta true}
+      :as opt}]
+  {:post [(mu/verify-cond (instance? SimpleJdbcInsert %))]
+   :pre  [(mu/verify-opt #{:datasource :gencols :catalog :schema
+                           :use-meta} opt)]}
   (let [v-gencols (mu/as-vector gencols)]
-    (-> (SimpleJdbcInsert. datasource)
+    (-> (SimpleJdbcInsert. ^DataSource datasource)
       (.withTableName (sp/db-iden table-name))
       (#(if (mu/not-empty? v-gencols)
           (.usingGeneratedKeyColumns ^SimpleJdbcInsert %

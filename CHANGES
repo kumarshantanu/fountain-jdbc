@@ -8,6 +8,15 @@
 * [TODO] Database metadata assisted Stored Procedures
 
 
+## 0.3 / 2011-July-??
+
+* Use Clj-DBSpec 0.3
+* [TODO] Support :fetch-size and :query-timeout in SimpleJdbcTemplate
+* Spring-Batch features
+  * [TODO] Lazy loading of SELECT query results to conserve memory
+  * [TODO] Range based lazy fetching of query results for pagination
+
+
 ## 0.2 / 2011-Apr-01
 
 * Use Clj-DBSpec 0.2

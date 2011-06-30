@@ -64,21 +64,21 @@
       query-for-long-test)))
 
 
-(defn query-for-map-test
+(defn query-for-row-test
   []
   (tu/sample-setup)
   (is (= {:age 30}
-        (jd/query-for-map "SELECT age FROM sample WHERE age = 30")))
+        (jd/query-for-row "SELECT age FROM sample WHERE age = 30")))
   (is (= {:age 30}
-        (jd/query-for-map "SELECT age FROM sample WHERE age = ?" [30])))
+        (jd/query-for-row "SELECT age FROM sample WHERE age = ?" [30])))
   (is (= {:age 30}
-        (jd/query-for-map "SELECT age FROM sample WHERE age = :age"
+        (jd/query-for-row "SELECT age FROM sample WHERE age = :age"
           {:age 30}))))
 
-(deftest test-query-for-map
-  (testing "test-query-for-map"
+(deftest test-query-for-row
+  (testing "test-query-for-row"
     (do-with-sjt
-      query-for-map-test)))
+      query-for-row-test)))
 
 
 (defn query-for-list-test
@@ -190,7 +190,7 @@
 (defn test-ns-hook []
   (test-query-for-int)
   (test-query-for-long)
-  (test-query-for-map)
+  (test-query-for-row)
   (test-query-for-list)
   (test-update)
   (test-batch-update)

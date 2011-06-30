@@ -88,8 +88,23 @@
   (row-count :sample2))
 
 
+(defn sample-ba1-setup
+  []
+  (let [sql-coll (with-liquibase
+                   (lb/change-sql (ch/create-table-withid :sample
+                                    [[:name [:varchar 30] :null false]
+                                     [:age  :int]])))]
+    (with-stmt ^Statement st
+      (mu/maybe (.execute st "DROP TABLE sample"))
+      (doseq [each sql-coll]
+        (println "\n" each "\n")
+        (.execute st ^String each))
+      (.execute st "INSERT INTO sample (name, age)
+                    VALUES ('Harry', 30)")
+      (.execute st "INSERT INTO sample (name, age)
+                    VALUES ('Abdul', 40)")
+      )))
+
 (defn fail
   ([msg] (is false msg))
   ([] (is false)))
-
-
