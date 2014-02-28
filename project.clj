@@ -17,7 +17,7 @@
                                   [net.mikera/cljunit "0.3.0"]]}
              :1.4 {:dependencies [[org.clojure/clojure "1.4.0"]]}
              :1.5 {:dependencies [[org.clojure/clojure "1.5.1"]]}
-             :1.6 {:dependencies [[org.clojure/clojure "1.6.0-alpha3"]]}}
+             :1.6 {:dependencies [[org.clojure/clojure "1.6.0-beta2"]]}}
   :aliases {"dev" ["with-profile" "dev,1.5"]
             "all" ["with-profile" "dev,1.4:dev,1.5:dev,1.6"]}
   :global-vars {*warn-on-reflection* true}
