@@ -11,7 +11,7 @@
   :javac-options {:destdir "target/classes/"
                   :source  "1.5"
                   :target  "1.5"}
-  :dependencies [[org.springframework/spring-jdbc "4.0.1.RELEASE"]]
+  :dependencies [[org.springframework/spring-jdbc "4.0.2.RELEASE"]]
   :profiles {:dev {:dependencies [[oss-jdbc "0.8.0"]
                                   [clj-dbcp "0.8.1"]
                                   [net.mikera/cljunit "0.3.0"]]}
